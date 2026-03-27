@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodLens - Emotion Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Tambahan untuk kotak fitur Meme di Halaman Utama */
+        .meme-promo {
+            background: linear-gradient(135deg, #8A2BE2 0%, #a855f7 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Diubah jadi center agar teks rapi di tengah */
+            position: relative;
+            overflow: hidden;
+            grid-row: span 2; /* Biar tingginya pas mengisi sisi kanan */
+            padding: 20px;
+        }
+
+        .meme-promo h3 {
+            font-size: 1.8rem;
+            line-height: 1.2;
+            margin: 0 0 10px 0;
+            color: white;
+            z-index: 1; /* Pastikan teks di atas emoji background */
+        }
+
+        .meme-promo p.desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0;
+            z-index: 1;
+        }
+
+        /* Dekorasi background biar lebih estetik */
+        .meme-promo::after {
+            content: '😂';
+            position: absolute;
+            font-size: 6rem;
+            right: -10px;
+            bottom: -20px;
+            opacity: 0.2;
+            transform: rotate(-15deg);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo" style="text-decoration: none;">😊 MoodLens</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/how-it-works">How It Works</a></li>
+            <li><a href="/emotions">Emotions Spectrum</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <main class="hero-section">
+        <div class="hero-text">
+            <h1>Know What You're<br>Feeling Right Now.</h1>
+            <p>Discover how you're feeling right now, with AI that instantly detects user emotions and turns them into interactive moments.</p>
+            <a href="/detect" class="btn-primary">Start Detect Now</a>
+        </div>
+        
+        <div class="hero-image-mockup">
+            <div class="dashboard-glass">
+                <div class="dash-header">
+                    <div class="dash-tabs">
+                        <div class="tab active"><span>📸</span> Face Detect</div>
+                    </div>
+                    <div class="dash-icons">
+                        <span class="icon">⏱️</span>
+                        <span class="icon">⚙️</span>
+                    </div>
+                </div>
+
+                <div class="dash-grid">
+                    <div class="dash-card primary-emo">
+                        <div>
+                            <p class="label">PRIMARY EMOTION:</p>
+                            <h2>HAPPY <br><span class="percent">(88%)</span></h2>
+                        </div>
+                        <div class="emoji-big">😄</div>
+                    </div>
+
+                    <div class="dash-card stats">
+                        <p class="label">Emotion Percentage</p>
+                        <div class="bars-container">
+                            <div class="bar-col"><div class="bar-bg"><div class="bar-fill yellow" style="height: 88%;"></div></div><p>Happy</p></div>
+                            <div class="bar-col"><div class="bar-bg"><div class="bar-fill blue" style="height: 15%;"></div></div><p>Sad</p></div>
+                            <div class="bar-col"><div class="bar-bg"><div class="bar-fill red" style="height: 10%;"></div></div><p>Angry</p></div>
+                            <div class="bar-col"><div class="bar-bg"><div class="bar-fill grey" style="height: 12%;"></div></div><p>Neutral</p></div>
+                        </div>
+                    </div>
+
+                    <div class="dash-card camera-area" style="background-image: url('https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=500&q=80');">
+                        <div class="cam-icon">🎥</div>
+                        <div class="face-scanner"></div>
+                    </div>
+
+                    <div class="dash-card meme-promo">
+                        <h3>Make Me a<br>Meme!</h3>
+                        <p class="desc">Turn your real-time emotion into hilarious, shareable memes with just one click.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

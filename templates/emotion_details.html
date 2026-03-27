@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ emotion.title }} - MoodLens</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar">
+        <a href="/" class="logo" style="text-decoration: none;">😊 MoodLens</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/how-it-works">How It Works</a></li>
+            <li><a href="/emotions">Emotions Spectrum</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <main class="app-container">
+        <div class="app-card">
+            
+            <div class="app-hero" style="background-image: url('{{ emotion.image }}');">
+                <div class="top-icons">
+                    <div class="icon-menu">∷</div>
+                </div>
+
+                <div class="hero-gradient">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <div class="tags">
+                                {% for tag in emotion.tags %}
+                                    <span class="tag">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                            <h1 class="title">{{ emotion.title }}</h1>
+                            <div class="stats">
+                                <span class="intensity">INTENSITY: <strong>{{ emotion.intensity }}/10</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="emotion-explanation" style="padding: 30px; background-color: #fff; color: #333;">
+                <h3 style="margin-top: 0; color: #1a1a2e; margin-bottom: 10px;">Description</h3>
+                <p style="margin-bottom: 20px; line-height: 1.6;">{{ emotion.description }}</p>
+
+                <h3 style="color: #1a1a2e; margin-bottom: 10px;">Why We Feel It</h3>
+                <p style="margin-bottom: 20px; line-height: 1.6;">{{ emotion.reason }}</p>
+
+                <h3 style="color: #1a1a2e; margin-bottom: 10px;">Supporting Conditions</h3>
+                <p style="margin-bottom: 0; line-height: 1.6;">{{ emotion.conditions }}</p>
+            </div>
+
+            <div class="explore-section">
+                <div class="explore-header">
+                    <h2>EXPLORE EMOTIONS</h2>
+                </div>
+                
+                <div class="emotion-row">
+                    <a href="/emotion/sad" class="emo-item">
+                        <img src="{{ url_for('static', filename='images/spgbb sad.png') }}" alt="Sadness">
+                        <p>Sadness <span>- 2m</span></p>
+                    </a>
+                    <a href="/emotion/angry" class="emo-item">
+                        <img src="{{ url_for('static', filename='images/spgbb angry.png') }}" alt="Anger">
+                        <p>Anger <span>- 3m</span></p>
+                    </a>
+                    <a href="/emotion/fear" class="emo-item">
+                        <img src="{{ url_for('static', filename='images/spgbb fear.png') }}" alt="Fear">
+                        <p>Fear <span>- 2m</span></p>
+                    </a>
+                    <a href="/emotion/surprise" class="emo-item">
+                        <img src="{{ url_for('static', filename='images/spgbb surprise.png') }}" alt="Surprise">
+                        <p>Surprise <span>- 1m</span></p>
+                    </a>
+                    <a href="/emotion/disgust" class="emo-item">
+                        <img src="{{ url_for('static', filename='images/spgbb disgust.png') }}" alt="Disgust">
+                        <p>Disgust <span>- 2m</span></p>
+                    </a>
+                    <a href="/emotion/happy" class="emo-item">
+                        <img src="{{ url_for('static', filename='images/spgbb hepi 2.png') }}" alt="Happy">
+                        <p>Happy <span>- 4m</span></p>
+                    </a>
+                    <a href="/emotion/neutral" class="emo-item">
+                        <img src="{{ url_for('static', filename='images/spgbb neutral.png') }}" alt="Neutral">
+                        <p>Neutral <span>- 1m</span></p>
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+</body>
+</html>

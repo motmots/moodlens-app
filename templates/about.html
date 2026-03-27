@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - MoodLens</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar">
+        <a href="/" class="logo" style="text-decoration: none;">😊 MoodLens</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/how-it-works">How It Works</a></li>
+            <li><a href="/emotions">Emotions Spectrum</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <main class="app-container">
+        <div class="app-card" style="padding: 50px; text-align: center;">
+            <h1 style="font-size: 2.5rem; color: #1a1a2e; margin-bottom: 20px;">About MoodLens</h1>
+            
+            <p style="font-size: 1.1rem; color: #4b5563; line-height: 1.8; max-width: 600px; margin: 0 auto 40px;">
+                <strong>MoodLens</strong> is an innovative <em>Artificial Intelligence</em> (AI)-based project designed to detect and recognize human facial emotions in <em>real-time</em>. The goal of this project is to help users better understand their own emotional spectrum and explore the psychological meaning behind each expression.
+            </p>
+
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin-bottom: 40px;">
+
+            <h2 style="font-size: 1.5rem; color: #5c6bc0; margin-bottom: 20px;">Behind the Technology</h2>
+            
+            <div style="background: #f1f5f9; padding: 25px; border-radius: 12px; max-width: 650px; margin: 0 auto 40px; text-align: left; border-left: 5px solid #5c6bc0;">
+                <p style="font-size: 1rem; color: #334155; line-height: 1.7; margin: 0;">
+                    MoodLens is powered by a custom <strong>EfficientNet</strong> architecture. We specifically trained our model using the <strong>FER-2013 dataset</strong> to accurately classify 7 core emotions: Happy, Sad, Angry, Fear, Disgust, Surprise, and Neutral in real-time.
+                </p>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin-bottom: 40px;">
+
+            <h2 style="font-size: 1.5rem; color: #5c6bc0; margin-bottom: 20px;">Developed By:</h2>
+
+            <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                <div style="background: #f8fafc; padding: 20px 40px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <h3 style="color: #1a1a2e; margin: 0; font-size: 1.2rem;">Ario Rizki M</h3>
+                    <p style="color: #64748b; margin-top: 5px; font-size: 0.9rem;">Developer / Model Engineer</p>
+                </div>
+
+                <div style="background: #f8fafc; padding: 20px 40px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <h3 style="color: #1a1a2e; margin: 0; font-size: 1.2rem;">Timothy Andreas</h3>
+                    <p style="color: #64748b; margin-top: 5px; font-size: 0.9rem;">Developer / UI/UX Designer</p>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+</body>
+</html>

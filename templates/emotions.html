@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotions Spectrum - MoodLens</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo" style="text-decoration: none;">😊 MoodLens</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/how-it-works">How It Works</a></li>
+            <li><a href="/emotions">Emotions Spectrum</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <main class="emotions-container">
+        <h1 class="text-center">YOUR EMOTIONS' SPECTRUM</h1>
+        
+        <div class="emotion-filters" id="filter-container">
+            <button class="filter" data-index="0">Angry</button>
+            <button class="filter" data-index="1">Disgust</button>
+            <button class="filter" data-index="2">Fear</button>
+            <button class="filter active" data-index="3">Happy</button>
+            <button class="filter" data-index="4">Sad</button>
+            <button class="filter" data-index="5">Surprise</button>
+            <button class="filter" data-index="6">Neutral</button>
+        </div>
+        
+        <div class="carousel-container" id="carousel">
+            <a href="/emotion/angry" class="emo-card" data-index="0">
+                <img src="{{ url_for('static', filename='images/spgbb angry.png') }}" alt="Angry">
+                <div class="emo-info"><h3>ANGRY</h3><p>A profound surge of anger and deep-seated frustration.</p></div>
+            </a>
+            <a href="/emotion/disgust" class="emo-card" data-index="1">
+                <img src="{{ url_for('static', filename='images/spgbb disgust.png') }}" alt="Disgust">
+                <div class="emo-info"><h3>DISGUST</h3><p>A visceral aversion and profound distaste.</p></div>
+            </a>
+            <a href="/emotion/fear" class="emo-card" data-index="2">
+                <img src="{{ url_for('static', filename='images/spgbb fear.png') }}" alt="Fear">
+                <div class="emo-info"><h3>FEAR</h3><p>A feeling of fear or anxiety about a potential threat.</p></div>
+            </a>
+            <a href="/emotion/happy" class="emo-card active" data-index="3">
+                <img src="{{ url_for('static', filename='images/spgbb hepi 3.png') }}" alt="Happy">
+                <div class="emo-info"><h3>HAPPY</h3><p>A profound sense of joy and deep satisfaction.</p></div>
+            </a>
+            <a href="/emotion/sad" class="emo-card" data-index="4">
+                <img src="{{ url_for('static', filename='images/spgbb sad.png') }}" alt="Sad">
+                <div class="emo-info"><h3>SAD</h3><p>A feeling of sorrow and disappointment.</p></div>
+            </a>
+            <a href="/emotion/surprise" class="emo-card" data-index="5">
+                <img src="{{ url_for('static', filename='images/spgbb surprise.png') }}" class="img-custom" alt="Surprise">
+                <div class="emo-info"><h3>SURPRISE</h3><p>A reaction to something unexpected.</p></div>
+            </a>
+            <a href="/emotion/neutral" class="emo-card" data-index="6">
+                <img src="{{ url_for('static', filename='images/spgbb neutral.png') }}" class="img-custom"  alt="Neutral">
+                <div class="emo-info"><h3>NEUTRAL</h3><p>A state of calmness without dominant emotions.</p></div>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        const cards = document.querySelectorAll('.emo-card');
+        const filters = document.querySelectorAll('.filter');
+        let currentIndex = 3; // Mulai dari Happy (Index 3 dari 0-6)
+        
+        // Variabel untuk Auto-Slide
+        let direction = 1; // 1 = geser ke kanan, -1 = geser ke kiri
+        let autoSlideTimer; 
+
+        // Fungsi utama untuk mengupdate posisi kipas
+        function updateCarousel() {
+            cards.forEach((card, index) => {
+                const offset = index - currentIndex;
+                
+                // Kalkulasi pergerakan menyebar (kipas)
+                const translateX = offset * 140; 
+                const rotate = offset * 12;      
+                const scale = 1 - Math.abs(offset) * 0.15; 
+                const zIndex = 10 - Math.abs(offset);
+
+                card.style.transform = `translateX(${translateX}px) rotate(${rotate}deg) scale(${scale})`;
+                card.style.zIndex = zIndex;
+
+                if (offset === 0) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+
+            // Update warna tombol filter di atas
+            filters.forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === currentIndex);
+            });
+        }
+
+        // Fungsi untuk menjalankan Auto-Slide
+        function startAutoSlide() {
+            autoSlideTimer = setInterval(() => {
+                // Cek apakah sudah mentok paling kanan (index 6)
+                if (currentIndex >= filters.length - 1) {
+                    direction = -1; // Putar balik ke kiri
+                } 
+                // Cek apakah sudah mentok paling kiri (index 0)
+                else if (currentIndex <= 0) {
+                    direction = 1; // Putar balik ke kanan
+                }
+                
+                // Tambahkan index sesuai arah
+                currentIndex += direction;
+                updateCarousel();
+
+            }, 3000); // 3000 ms = 3 detik
+        }
+
+        // Fungsi untuk mereset timer jika user mengklik manual
+        function resetAutoSlide() {
+            clearInterval(autoSlideTimer);
+            startAutoSlide();
+        }
+
+        // Event listener saat kartu diklik
+        cards.forEach((card, index) => {
+            card.addEventListener('click', (e) => {
+                if (currentIndex !== index) {
+                    e.preventDefault(); 
+                    currentIndex = index;
+                    updateCarousel();
+                    resetAutoSlide(); // Reset timer auto-slide
+                }
+            });
+        });
+
+        // Event listener saat tombol filter diklik
+        filters.forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                currentIndex = index;
+                updateCarousel();
+                resetAutoSlide(); // Reset timer auto-slide
+            });
+        });
+
+        // Jalankan susunan kipas & auto-slide saat web dibuka
+        updateCarousel();
+        startAutoSlide();
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - MoodLens</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .step-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            text-align: left;
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 16px;
+        }
+        .step-number {
+            background: #5c6bc0;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            color: #1a1a2e;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        .step-content p {
+            color: #4b5563;
+            line-height: 1.6;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <nav class="navbar">
+        <a href="/" class="logo">😊 MoodLens</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/how-it-works">How It Works</a></li>
+            <li><a href="/emotions">Emotions Spectrum</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <main class="app-container">
+        <div class="app-card" style="padding: 50px; text-align: center;">
+            <h1 style="font-size: 2.5rem; color: #1a1a2e; margin-bottom: 10px;">How Does It Work?</h1>
+            <p style="color: #64748b; margin-bottom: 40px;">A simple guide to using MoodLens emotion detection technology.</p>
+
+            <div class="step-container">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Allow Camera Access</h3>
+                    <p>Open the <strong>Live Detection</strong> page on this website. Your browser will request permission to use your laptop or device's camera. Click <strong>"Allow"</strong> (Izinkan) so our system can start viewing your face.</p>
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Real-Time AI Analysis</h3>
+                    <p>Once the camera is on, point your face toward the screen. Automatically, our <em>Artificial Intelligence</em> (AI) system will capture snapshots of your face every few seconds and process them using a <em>Deep Learning</em> (DeepFace) model to guess your emotion.</p>
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>View Your Emotion Results</h3>
+                    <p>Within seconds, the dominant emotion (such as Happy, Sad, Angry, etc.) will appear on the screen. Try changing your expression and see how our AI responds to these changes!</p>
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Learn About the Emotion</h3>
+                    <p>You can visit the <strong>Emotions Spectrum</strong> menu to learn more about each emotion, why humans experience them, and the conditions under which they arise.</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <a href="/detect" class="btn-primary" style="text-decoration: none;">Try It Now</a>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
