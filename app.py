@@ -1,5 +1,4 @@
 import os
-# MANTRA AJAIB: Paksa TensorFlow menggunakan mesin Keras versi lama
 os.environ["TF_USE_LEGACY_KERAS"] = "1"
 
 from flask import Flask, render_template, request, jsonify
@@ -12,15 +11,9 @@ from tensorflow.keras.layers import Dense, DepthwiseConv2D
 import efficientnet.tfkeras as efn 
 
 app = Flask(__name__)
-
-# Daftar 7 Emosi bawaan model
 EMOTIONS_LIST = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 
-# ==========================================
-# --- 1. LOAD AI MODEL (EFFICIENTNET) ---
-# ==========================================
-
-print("⏳ Loading Custom EfficientNet Model...")
+print("Loading Custom EfficientNet Model...")
 MODEL_PATH = 'FacialExpressionModel.h5'
 
 class SafeDense(Dense):
@@ -48,10 +41,6 @@ else:
     my_model = None
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
-# ==========================================
-# --- 2. ROUTES HALAMAN WEB (HTML) ---
-# ==========================================
 
 @app.route('/')
 def home():
@@ -144,10 +133,6 @@ def emotion_detail(emotion_name):
     data = emotions_data.get(emotion_name.lower(), emotions_data['happy'])
     return render_template('emotion_details.html', emotion=data)
 
-# ==========================================
-# --- 3. ROUTE AI: PINTU PENERIMA FOTO ---
-# ==========================================
-
 @app.route('/analyze_frame', methods=['POST'])
 def analyze_frame():
     if my_model is None:
@@ -179,15 +164,13 @@ def analyze_frame():
         if face_crop_gray.shape[0] == 0 or face_crop_gray.shape[1] == 0:
             return jsonify({'emotion': 'INVALID CROP', 'box': None, 'probabilities': {}})
 
-        # PREPROCESSING EFFICIENTNET ASLI
+        
         face_crop_rgb = cv2.cvtColor(face_crop_gray, cv2.COLOR_GRAY2RGB)
         face_crop_resized = cv2.resize(face_crop_rgb, (96, 96), interpolation=cv2.INTER_LINEAR) 
         face_crop_batch = np.expand_dims(face_crop_resized, axis=0)
         
-        # 1. Prediksi Mentah dari AI
         preds = my_model.predict(face_crop_batch, verbose=0)[0]
 
-        # 2. SISTEM BOBOT (BOOST) UNTUK 7 EMOSI
         BOOSTS = {
             'angry': 1.0,
             'disgust': 7.0,
@@ -203,7 +186,6 @@ def analyze_frame():
             boosted_val = float(preds[i]) * BOOSTS[emotion_name]
             boosted_preds.append(boosted_val)
 
-        # 3. NORMALISASI PERSENTASE
         total_boosted = sum(boosted_preds)
         if total_boosted == 0:
             total_boosted = 1.0
@@ -213,7 +195,6 @@ def analyze_frame():
             percent = (boosted_preds[i] / total_boosted) * 100
             emotion_percentages[emotion_name.upper()] = round(percent, 2)
         
-        # 4. Tentukan Emosi Dominan
         highest_index = np.argmax(boosted_preds)
         dominant_emotion = EMOTIONS_LIST[highest_index].upper()
         
