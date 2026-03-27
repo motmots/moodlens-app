@@ -7,16 +7,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* CSS Tambahan untuk kotak fitur Meme di Halaman Utama */
         .meme-promo {
             background: linear-gradient(135deg, #8A2BE2 0%, #a855f7 100%);
             color: white;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Diubah jadi center agar teks rapi di tengah */
+            justify-content: center;
             position: relative;
             overflow: hidden;
-            grid-row: span 2; /* Biar tingginya pas mengisi sisi kanan */
+            grid-row: span 2;
             padding: 20px;
         }
 
@@ -25,7 +24,7 @@
             line-height: 1.2;
             margin: 0 0 10px 0;
             color: white;
-            z-index: 1; /* Pastikan teks di atas emoji background */
+            z-index: 1;
         }
 
         .meme-promo p.desc {
@@ -35,7 +34,6 @@
             z-index: 1;
         }
 
-        /* Dekorasi background biar lebih estetik */
         .meme-promo::after {
             content: '😂';
             position: absolute;
