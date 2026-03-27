@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Menggunakan font modern */
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #f1f3f5;
@@ -22,7 +21,6 @@
             text-align: center;
         }
         
-        /* Layout Video & Canvas - Lebih Halus & Estetik */
         .video-wrapper {
             position: relative;
             width: 100%;
@@ -37,11 +35,10 @@
         #videoElement {
             width: 100%;
             height: auto;
-            transform: scaleX(-1); /* Mirror effect */
+            transform: scaleX(-1);
             display: block;
         }
         
-        /* KANVAS UNTUK MENGGAMBAR KOTAK WAJAH */
         #overlayCanvas {
             position: absolute;
             top: 0;
@@ -53,7 +50,6 @@
             z-index: 10;
         }
 
-        /* Tombol Controls - Bentuk Pill Modern dengan Gradien */
         .controls {
             display: flex;
             gap: 15px;
@@ -91,7 +87,6 @@
             display: none; 
         }
 
-        /* Area Hasil Deteksi - Dibuat Lebih Lebar & Rapi */
         .result-box {
             background: #ffffff;
             padding: 35px 40px;
@@ -99,7 +94,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             display: none; 
             width: 100%;
-            max-width: 640px; /* Disamakan dengan lebar video */
+            max-width: 640px;
             margin-bottom: 20px;
             box-sizing: border-box;
         }
@@ -114,15 +109,12 @@
         .emotion-text {
             font-size: 3.2rem;
             font-weight: 800;
-            color: #538DD3; /* Warna biru modern yang lebih kalem */
+            color: #538DD3;
             text-transform: uppercase;
             margin: 5px 0 25px 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* PERUBAHAN AJAIB: Mengubah output list vertical dari JS mu 
-           menjadi Grid 2x2 yang Estetik tanpa menyentuh JS.
-        */
         #probContainer {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -134,11 +126,11 @@
             padding: 18px 20px;
             border-radius: 16px;
             display: flex;
-            flex-direction: column; /* Ubah dari row ke column */
+            flex-direction: column;
             align-items: flex-start;
             gap: 12px;
-            margin-bottom: 0; /* Margin dihilangkan karena pakai gap di grid */
-            position: relative; /* Untuk memposisikan kotak persen */
+            margin-bottom: 0;
+            position: relative;
         }
         .emotion-label {
             width: auto;
@@ -151,7 +143,7 @@
         .bar-wrapper {
             width: 100%;
             background: #e9ecef;
-            height: 10px; /* Sedikit ditebalkan */
+            height: 10px;
             border-radius: 10px;
             overflow: hidden;
             flex-grow: 0;
@@ -160,7 +152,6 @@
             height: 100%;
             border-radius: 10px;
             transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            /* Warna bar akan tetap mengikuti yang di-generate oleh JS kamu */
         }
         .percent-box {
             position: absolute;
@@ -178,12 +169,11 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
 
-        /* AREA BARU: HASIL MEME - Jauh lebih elegan */
         #memeArea {
             display: none; 
             margin-top: 10px; 
             background: #ffffff;
-            border: 2px dashed #B291FF; /* Border putus-putus ungu lembut */
+            border: 2px dashed #B291FF;
             border-radius: 24px; 
             padding: 30px; 
             width: 100%;
@@ -205,7 +195,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         #btnDownloadMeme {
-            background: linear-gradient(135deg, #FF758C 0%, #FF7EB3 100%); /* Gradien pink estetik */
+            background: linear-gradient(135deg, #FF758C 0%, #FF7EB3 100%);
             color: white; 
             margin-top: 20px; 
             width: 100%;
