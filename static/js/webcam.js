@@ -1,4 +1,3 @@
-// Mengambil elemen-elemen dari HTML
 const video = document.getElementById('videoElement');
 const canvas = document.getElementById('canvasElement');
 const overlayCanvas = document.getElementById('overlayCanvas'); 
@@ -10,15 +9,13 @@ const emotionResult = document.getElementById('emotionResult');
 const probContainer = document.getElementById('probContainer');
 const memeArea = document.getElementById('memeArea'); 
 const memeCanvas = document.getElementById('memeCanvas'); 
-const btnDownloadMeme = document.getElementById('btnDownloadMeme'); // Elemen tombol Download
+const btnDownloadMeme = document.getElementById('btnDownloadMeme');
 
 let videoStream = null;
 let detectionInterval = null;
 
-// Flag untuk Konsep Meme
 let captureNextFrameAsMeme = false; 
 
-// Fungsi untuk MENYALAKAN kamera
 async function startCamera() {
     try {
         videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -30,7 +27,6 @@ async function startCamera() {
         resultBox.style.display = 'block';
         emotionResult.innerText = "ANALYZING...";
 
-        // Mulai proses jepret dan deteksi
         detectionInterval = setInterval(captureAndSendFrame, 1500);
 
     } catch (err) {
@@ -39,7 +35,6 @@ async function startCamera() {
     }
 }
 
-// Fungsi untuk MEMATIKAN kamera
 function stopCamera() {
     if (videoStream) {
         videoStream.getTracks().forEach(track => track.stop());
@@ -62,7 +57,6 @@ function stopCamera() {
     emotionResult.style.color = "#1a1a2e";
 }
 
-// Fungsi Utama: Jepret foto dan kirim ke backend (app.py)
 function captureAndSendFrame() {
     const context = canvas.getContext('2d');
     canvas.width = video.videoWidth;
@@ -80,7 +74,6 @@ function captureAndSendFrame() {
     })
     .then(response => response.json())
     .then(data => {
-        // A. TAMPILKAN TEKS EMOSI
         if(data.emotion) {
             emotionResult.innerText = data.emotion;
             if(data.emotion === "HAPPY") emotionResult.style.color = "#FFD700";
@@ -89,7 +82,6 @@ function captureAndSendFrame() {
             else emotionResult.style.color = "#8A2BE2"; 
         }
 
-        // B. GAMBAR KOTAK WAJAH
         const ctxOverlay = overlayCanvas.getContext('2d');
         overlayCanvas.width = video.videoWidth;
         overlayCanvas.height = video.videoHeight;
@@ -102,7 +94,6 @@ function captureAndSendFrame() {
             ctxOverlay.strokeRect(data.box.x, data.box.y, data.box.w, data.box.h);
         }
 
-        // C. TAMPILKAN PROGRESS BAR PERSENTASE
         if (data.probabilities) {
             const colorMap = {
                 'HAPPY': '#f1c40f', 'SAD': '#3498db', 'ANGRY': '#e74c3c', 
@@ -128,7 +119,6 @@ function captureAndSendFrame() {
             probContainer.innerHTML = probHTML;
         }
 
-        // D. JIKA USER MINTA DIBUATKAN MEME
         if (captureNextFrameAsMeme && data.emotion && data.emotion !== 'NO FACE DETECTED') {
             generateMeme(data.emotion);
             captureNextFrameAsMeme = false; 
@@ -138,7 +128,6 @@ function captureAndSendFrame() {
     .catch(error => console.error("Error:", error));
 }
 
-// Database teks meme
 const memeTexts = {
     'HAPPY': [
         { top: 'KETIKA LIHAT...', bottom: 'SALDO BERTAMBAH!' },
@@ -194,7 +183,6 @@ const memeTexts = {
     ]
 };
 
-// Fungsi generate Meme
 function generateMeme(emotion) {
     const ctxMeme = memeCanvas.getContext('2d');
     const emotionTexts = memeTexts[emotion] || [{ top: 'KETIKA...', bottom: '...' }];
@@ -227,7 +215,6 @@ function generateMeme(emotion) {
     memeArea.style.display = 'block';
 }
 
-// Pasang event listener
 btnStart.addEventListener('click', startCamera);
 btnStop.addEventListener('click', stopCamera);
 btnMeme.addEventListener('click', () => {
@@ -236,24 +223,18 @@ btnMeme.addEventListener('click', () => {
     setTimeout(() => { btnMeme.innerText = "Make Me a Meme!"; }, 2500); 
 });
 
-// FITUR BARU: Download Meme ke Local Device
 if (btnDownloadMeme) {
     btnDownloadMeme.addEventListener('click', () => {
-        // Ubah isi canvas meme menjadi format URL gambar (PNG)
         const imageURL = memeCanvas.toDataURL('image/png');
-        
-        // Buat elemen <a> sementara secara gaib
+
         const downloadLink = document.createElement('a');
         downloadLink.href = imageURL;
         
-        // Setel nama file otomatis
         downloadLink.download = `MoodLens_Meme_${new Date().getTime()}.png`;
         
-        // Pura-pura klik link tersebut untuk memicu download
         document.body.appendChild(downloadLink);
         downloadLink.click();
         
-        // Bersihkan link gaib tadi
         document.body.removeChild(downloadLink);
     });
 }
