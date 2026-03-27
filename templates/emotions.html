@@ -66,18 +66,15 @@
     <script>
         const cards = document.querySelectorAll('.emo-card');
         const filters = document.querySelectorAll('.filter');
-        let currentIndex = 3; // Mulai dari Happy (Index 3 dari 0-6)
+        let currentIndex = 3;
         
-        // Variabel untuk Auto-Slide
-        let direction = 1; // 1 = geser ke kanan, -1 = geser ke kiri
+        let direction = 1;
         let autoSlideTimer; 
 
-        // Fungsi utama untuk mengupdate posisi kipas
         function updateCarousel() {
             cards.forEach((card, index) => {
                 const offset = index - currentIndex;
                 
-                // Kalkulasi pergerakan menyebar (kipas)
                 const translateX = offset * 140; 
                 const rotate = offset * 12;      
                 const scale = 1 - Math.abs(offset) * 0.15; 
@@ -93,59 +90,50 @@
                 }
             });
 
-            // Update warna tombol filter di atas
             filters.forEach((btn, idx) => {
                 btn.classList.toggle('active', idx === currentIndex);
             });
         }
 
-        // Fungsi untuk menjalankan Auto-Slide
         function startAutoSlide() {
             autoSlideTimer = setInterval(() => {
-                // Cek apakah sudah mentok paling kanan (index 6)
                 if (currentIndex >= filters.length - 1) {
-                    direction = -1; // Putar balik ke kiri
+                    direction = -1;
                 } 
-                // Cek apakah sudah mentok paling kiri (index 0)
                 else if (currentIndex <= 0) {
-                    direction = 1; // Putar balik ke kanan
+                    direction = 1;
                 }
-                
-                // Tambahkan index sesuai arah
+
                 currentIndex += direction;
                 updateCarousel();
 
-            }, 3000); // 3000 ms = 3 detik
+            }, 3000);
         }
 
-        // Fungsi untuk mereset timer jika user mengklik manual
         function resetAutoSlide() {
             clearInterval(autoSlideTimer);
             startAutoSlide();
         }
 
-        // Event listener saat kartu diklik
         cards.forEach((card, index) => {
             card.addEventListener('click', (e) => {
                 if (currentIndex !== index) {
                     e.preventDefault(); 
                     currentIndex = index;
                     updateCarousel();
-                    resetAutoSlide(); // Reset timer auto-slide
+                    resetAutoSlide();
                 }
             });
         });
 
-        // Event listener saat tombol filter diklik
         filters.forEach((btn, index) => {
             btn.addEventListener('click', () => {
                 currentIndex = index;
                 updateCarousel();
-                resetAutoSlide(); // Reset timer auto-slide
+                resetAutoSlide();
             });
         });
 
-        // Jalankan susunan kipas & auto-slide saat web dibuka
         updateCarousel();
         startAutoSlide();
     </script>
