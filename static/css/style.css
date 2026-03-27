@@ -1,6 +1,3 @@
-/* =========================================
-   1. GLOBAL RESET & TYPOGRAPHY
-   ========================================= */
 * {
     margin: 0;
     padding: 0;
@@ -14,9 +11,6 @@ body {
     min-height: 100vh;
 }
 
-/* =========================================
-   2. NAVBAR
-   ========================================= */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -48,9 +42,6 @@ body {
     color: #5c6bc0;
 }
 
-/* =========================================
-   3. HERO SECTION (KIRI: TEKS & TOMBOL)
-   ========================================= */
 .hero-section {
     display: flex;
     justify-content: space-between;
@@ -98,9 +89,6 @@ body {
     box-shadow: 0 15px 25px rgba(92, 107, 192, 0.4);
 }
 
-/* =========================================
-   4. HERO SECTION (KANAN: DASHBOARD MOCKUP)
-   ========================================= */
 .hero-image-mockup {
     flex: 1.2;
     display: flex;
@@ -118,7 +106,6 @@ body {
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.05);
 }
 
-/* Header Dashboard (Tabs) */
 .dash-header {
     display: flex;
     justify-content: space-between;
@@ -155,7 +142,6 @@ body {
     margin-left: 0.5rem;
 }
 
-/* Grid & Cards Dashboard */
 .dash-grid {
     display: grid;
     grid-template-columns: 1.5fr 1fr;
@@ -177,7 +163,6 @@ body {
     margin-bottom: 0.5rem;
 }
 
-/* Primary Emotion Card */
 .primary-emo {
     display: flex;
     justify-content: space-between;
@@ -201,7 +186,6 @@ body {
     line-height: 1;
 }
 
-/* Statistics Card (Bar Chart) */
 .bars-container {
     display: flex;
     justify-content: space-around;
@@ -242,7 +226,6 @@ body {
 .bar-fill.red { background: #ef4444; }
 .bar-fill.grey { background: #94a3b8; }
 
-/* Camera Area Dummy */
 .camera-area {
     grid-column: 1 / 2;
     height: 220px;
@@ -275,7 +258,6 @@ body {
     box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
 }
 
-/* Side Info (History & Suggestion) */
 .dash-side {
     display: flex;
     flex-direction: column;
@@ -298,9 +280,6 @@ body {
     color: #1e293b;
 }
 
-/* =========================================
-   5. EMOTIONS SPECTRUM (FAN CAROUSEL)
-   ========================================= */
 .emotions-container {
     padding: 3rem 5%;
     display: flex;
@@ -317,7 +296,6 @@ body {
     color: #111827;
 }
 
-/* Filter Tombol (7 Emosi) */
 .emotion-filters {
     display: flex;
     justify-content: center;
@@ -352,7 +330,6 @@ body {
     box-shadow: 0 4px 10px rgba(92, 107, 192, 0.3);
 }
 
-/* Kartu Gambar Emosi (Carousel Kipas) */
 .carousel-container {
     position: relative;
     width: 100%;
@@ -391,7 +368,6 @@ body {
     object-fit: cover;
 }
 
-/* Teks Gradient di Bawah Kartu */
 .emo-info {
     position: absolute;
     bottom: 0;
@@ -420,9 +396,6 @@ body {
     opacity: 1; 
 }
 
-/* =========================================
-   6. HALAMAN DETECT (KAMERA)
-   ========================================= */
 .detect-container {
     padding: 2rem 5%;
     display: flex;
@@ -487,9 +460,6 @@ body {
     margin-top: 1rem;
 }
 
-/* =========================================
-   7. EMOTION DETAILS (APP CARD STYLE)
-   ========================================= */
 .bg-light {
     background-color: #f3f4f6;
 }
@@ -500,17 +470,16 @@ body {
     padding: 2rem 5%;
 }
 
-/* Kartu Utama */
+
 .app-card {
     background: #ffffff;
     width: 100%;
-    max-width: 800px; /* Ukuran persis seperti aplikasi */
+    max-width: 800px;
     border-radius: 24px;
     overflow: hidden;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
 
-/* Bagian Atas (Gambar Hero) */
 .app-hero {
     position: relative;
     height: 450px;
@@ -522,7 +491,6 @@ body {
     justify-content: space-between;
 }
 
-/* Ikon atas (Mockup) */
 .top-icons {
     display: flex;
     justify-content: space-between;
@@ -532,7 +500,6 @@ body {
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-/* Gradien Gelap di Bawah Gambar */
 .hero-gradient {
     background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
     padding: 2rem;
@@ -567,7 +534,7 @@ body {
     font-weight: 700;
     margin-right: 0.5rem;
     text-transform: uppercase;
-    color: white; /* Perbaikan warna tag agar terbaca di background gelap */
+    color: white;
 }
 
 .title {
@@ -597,7 +564,6 @@ body {
     color: #fcd34d;
 }
 
-/* Widget Mengambang */
 .floating-widget {
     background: #1f2937;
     padding: 1rem;
@@ -628,7 +594,6 @@ body {
     display: block;
 }
 
-/* Bagian Bawah (Explore) */
 .explore-section {
     padding: 2rem;
     background: white;
@@ -667,12 +632,12 @@ body {
 }
 
 .emo-item img {
-   width: 100px;      /* Tetapkan lebar pasti */
-    height: 120px;     /* Tetapkan tinggi pasti */
+   width: 100px;
+    height: 120px;
     border-radius: 12px;
-    object-fit: cover; /* Memotong gambar secara cerdas agar tidak penyet */
-    object-position: center; /* Fokus ke tengah gambar */
-    background-color: #e2e8f0; /* Warna cadangan jika gambar gagal load */
+    object-fit: cover;
+    object-position: center;
+    background-color: #e2e8f0;
     display: block;
 }
 
