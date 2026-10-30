@@ -1,46 +1,76 @@
 import os
-os.environ["TF_USE_LEGACY_KERAS"] = "1"
+from collections import deque
 
 from flask import Flask, render_template, request, jsonify
 import cv2
 import numpy as np
 import base64
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras.layers import Dense, DepthwiseConv2D
-import efficientnet.tfkeras as efn 
+import onnxruntime as ort
 
 app = Flask(__name__)
 EMOTIONS_LIST = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 
-print("Loading Custom EfficientNet Model...")
-MODEL_PATH = 'FacialExpressionModel.h5'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FACE_MODEL_PATH = os.path.join(BASE_DIR, 'models', 'face_detection_yunet_2023mar.onnx')
 
-class SafeDense(Dense):
-    def __init__(self, **kwargs):
-        kwargs.pop('quantization_config', None)
-        super().__init__(**kwargs)
+# 2 model HSEmotion EfficientNet-B2 (AffectNet) dipakai sebagai pengekstrak fitur.
+# Versi *_feat.onnx = model asli + output tambahan berisi fitur sebelum classifier.
+# Fiturnya digabung lalu diklasifikasi oleh classifier baru (emotion_head.npz) yang
+# dilatih ulang di RAF-DB + AffectNet, urutan kelas sesuai EMOTIONS_LIST.
+EMOTION_MODELS = ['enet_b2_7_feat.onnx', 'enet_b2_8_feat.onnx']
+EMOTION_HEAD_PATH = os.path.join(BASE_DIR, 'models', 'emotion_head.npz')
+EMOTION_IMG_SIZE = 260
+IMAGENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+IMAGENET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
-class SafeDepthwiseConv2D(DepthwiseConv2D):
-    def __init__(self, **kwargs):
-        kwargs.pop('groups', None)
-        super().__init__(**kwargs)
-
-if os.path.exists(MODEL_PATH):
-    my_model = load_model(
-        MODEL_PATH, 
-        custom_objects={
-            'Dense': SafeDense,
-            'DepthwiseConv2D': SafeDepthwiseConv2D
-        }, 
-        compile=False
-    )
+print("Loading HSEmotion models...")
+model_paths = [os.path.join(BASE_DIR, 'models', name) for name in EMOTION_MODELS]
+if all(os.path.exists(p) for p in model_paths + [FACE_MODEL_PATH, EMOTION_HEAD_PATH]):
+    # Tanpa ini, 2 sesi yang jalan bergantian saling berebut thread CPU (~3x lebih lambat)
+    session_options = ort.SessionOptions()
+    session_options.add_session_config_entry("session.intra_op.allow_spinning", "0")
+    emotion_session = [
+        ort.InferenceSession(p, session_options, providers=['CPUExecutionProvider'])
+        for p in model_paths
+    ]
+    emotion_head = np.load(EMOTION_HEAD_PATH)
+    face_detector = cv2.FaceDetectorYN.create(FACE_MODEL_PATH, "", (320, 320), 0.8, 0.3, 5000)
     print("✅ Model loaded successfully!")
 else:
-    print(f"❌ ERROR: File {MODEL_PATH} tidak ditemukan! Pastikan ada di folder yang sama.")
-    my_model = None
+    print("❌ ERROR: File model di folder 'models/' tidak ditemukan!")
+    emotion_session = None
+    face_detector = None
 
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+# Rata-rata probabilitas beberapa frame terakhir supaya hasil tidak loncat-loncat
+SMOOTHING_WINDOW = 6
+recent_probs = deque(maxlen=SMOOTHING_WINDOW)
+
+
+def detect_faces(img):
+    h, w = img.shape[:2]
+    face_detector.setInputSize((w, h))
+    _, faces = face_detector.detect(img)
+    if faces is None:
+        return []
+    # urutkan dari wajah terbesar
+    return sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
+
+
+def predict_emotion(face_bgr):
+    face_rgb = cv2.cvtColor(face_bgr, cv2.COLOR_BGR2RGB)
+    x = cv2.resize(face_rgb, (EMOTION_IMG_SIZE, EMOTION_IMG_SIZE)).astype(np.float32) / 255.0
+    x = (x - IMAGENET_MEAN) / IMAGENET_STD
+    x = x.transpose(2, 0, 1)[np.newaxis, ...]
+    # output[1] = fitur sebelum classifier
+    features = np.concatenate([
+        session.run(None, {session.get_inputs()[0].name: x})[1][0]
+        for session in emotion_session
+    ])
+    features = (features - emotion_head['mean']) / emotion_head['std']
+    logits = emotion_head['W'] @ features + emotion_head['b']
+    e_x = np.exp(logits - np.max(logits))
+    return e_x / e_x.sum()
+
 
 @app.route('/')
 def home():
@@ -135,7 +165,7 @@ def emotion_detail(emotion_name):
 
 @app.route('/analyze_frame', methods=['POST'])
 def analyze_frame():
-    if my_model is None:
+    if emotion_session is None:
         return jsonify({'emotion': 'MODEL NOT LOADED', 'box': None, 'probabilities': {}})
 
     try:
@@ -144,68 +174,41 @@ def analyze_frame():
         encoded_data = image_data.split(',')[1]
         nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(50, 50))
-        
+
+        faces = detect_faces(img)
         if len(faces) == 0:
+            recent_probs.clear()
             return jsonify({'emotion': 'NO FACE DETECTED', 'box': None, 'probabilities': {}})
-            
-        (x, y, w, h) = faces[0]
-        
-        pad = 15 
+
+        x, y, w, h = [int(v) for v in faces[0][:4]]
+
+        pad = int(0.1 * max(w, h))
         y1 = max(0, y - pad)
         y2 = min(img.shape[0], y + h + pad)
         x1 = max(0, x - pad)
         x2 = min(img.shape[1], x + w + pad)
-        
-        face_crop_gray = gray[y1:y2, x1:x2]
-        
-        if face_crop_gray.shape[0] == 0 or face_crop_gray.shape[1] == 0:
+
+        face_crop = img[y1:y2, x1:x2]
+        if face_crop.shape[0] == 0 or face_crop.shape[1] == 0:
             return jsonify({'emotion': 'INVALID CROP', 'box': None, 'probabilities': {}})
 
-        
-        face_crop_rgb = cv2.cvtColor(face_crop_gray, cv2.COLOR_GRAY2RGB)
-        face_crop_resized = cv2.resize(face_crop_rgb, (96, 96), interpolation=cv2.INTER_LINEAR) 
-        face_crop_batch = np.expand_dims(face_crop_resized, axis=0)
-        
-        preds = my_model.predict(face_crop_batch, verbose=0)[0]
+        recent_probs.append(predict_emotion(face_crop))
+        probs = np.mean(recent_probs, axis=0)
 
-        BOOSTS = {
-            'angry': 1.0,
-            'disgust': 7.0,
-            'fear': 2.0,
-            'happy': 1.0,
-            'neutral': 0.6,
-            'sad': 3.0,
-            'surprise': 1.0
+        emotion_percentages = {
+            name.upper(): round(float(probs[i]) * 100, 2)
+            for i, name in enumerate(EMOTIONS_LIST)
         }
+        dominant_emotion = EMOTIONS_LIST[int(np.argmax(probs))].upper()
 
-        boosted_preds = []
-        for i, emotion_name in enumerate(EMOTIONS_LIST):
-            boosted_val = float(preds[i]) * BOOSTS[emotion_name]
-            boosted_preds.append(boosted_val)
-
-        total_boosted = sum(boosted_preds)
-        if total_boosted == 0:
-            total_boosted = 1.0
-            
-        emotion_percentages = {}
-        for i, emotion_name in enumerate(EMOTIONS_LIST):
-            percent = (boosted_preds[i] / total_boosted) * 100
-            emotion_percentages[emotion_name.upper()] = round(percent, 2)
-        
-        highest_index = np.argmax(boosted_preds)
-        dominant_emotion = EMOTIONS_LIST[highest_index].upper()
-        
         print(f"\r📸 DOMINAN: {dominant_emotion}     ", end="")
 
         return jsonify({
             'emotion': dominant_emotion,
             'probabilities': emotion_percentages,
-            'box': {'x': int(x), 'y': int(y), 'w': int(w), 'h': int(h)} 
+            'box': {'x': x, 'y': y, 'w': w, 'h': h}
         })
-        
+
     except Exception as e:
         print(f"\nError AI: {e}")
         return jsonify({'emotion': 'ERROR', 'box': None, 'probabilities': {}})

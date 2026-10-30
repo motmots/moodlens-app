@@ -31,7 +31,7 @@ async function startCamera() {
 
     } catch (err) {
         console.error("Error accessing webcam:", err);
-        alert("Gagal mengakses kamera. Pastikan browser diizinkan menggunakan kamera.");
+        alert("Gagal mengakses kamera. Pastikan browser diizinkan menggunakan kamera.\n\n" + err.name + ": " + err.message);
     }
 }
 
