@@ -13,6 +13,7 @@ const btnDownloadMeme = document.getElementById('btnDownloadMeme');
 
 let videoStream = null;
 let detectionInterval = null;
+let clientId = null;
 
 let captureNextFrameAsMeme = false; 
 
@@ -20,7 +21,9 @@ async function startCamera() {
     try {
         videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = videoStream;
-        
+        // ID baru tiap kamera dinyalakan, supaya riwayat smoothing mulai dari awal
+        clientId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+
         btnStart.style.display = 'none';
         btnStop.style.display = 'block';
         btnMeme.style.display = 'block'; 
@@ -70,7 +73,7 @@ function captureAndSendFrame() {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ image: imageData })
+        body: JSON.stringify({ image: imageData, client_id: clientId })
     })
     .then(response => response.json())
     .then(data => {

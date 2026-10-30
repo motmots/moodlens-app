@@ -1,5 +1,6 @@
 import os
-from collections import deque
+from collections import OrderedDict, deque
+from threading import Lock
 
 from flask import Flask, render_template, request, jsonify
 import cv2
@@ -43,7 +44,29 @@ else:
 
 # Rata-rata probabilitas beberapa frame terakhir supaya hasil tidak loncat-loncat
 SMOOTHING_WINDOW = 6
-recent_probs = deque(maxlen=SMOOTHING_WINDOW)
+# Riwayat disimpan per pengguna supaya hasil antar pengguna tidak tercampur.
+# Kalau melebihi batas, riwayat yang paling lama tidak aktif dibuang.
+MAX_SMOOTHING_CLIENTS = 200
+client_probs = OrderedDict()
+client_probs_lock = Lock()
+
+
+def smooth_probs(client_id, probs):
+    # Tanpa client_id (misal kirim 1 foto saja) tidak ada frame untuk dirata-rata
+    if not client_id:
+        return probs
+    with client_probs_lock:
+        history = client_probs.setdefault(client_id, deque(maxlen=SMOOTHING_WINDOW))
+        client_probs.move_to_end(client_id)
+        history.append(probs)
+        while len(client_probs) > MAX_SMOOTHING_CLIENTS:
+            client_probs.popitem(last=False)
+        return np.mean(history, axis=0)
+
+
+def clear_probs(client_id):
+    with client_probs_lock:
+        client_probs.pop(client_id, None)
 
 
 def detect_faces(img):
@@ -171,13 +194,14 @@ def analyze_frame():
     try:
         data = request.get_json()
         image_data = data['image']
+        client_id = data.get('client_id')
         encoded_data = image_data.split(',')[1]
         nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         faces = detect_faces(img)
         if len(faces) == 0:
-            recent_probs.clear()
+            clear_probs(client_id)
             return jsonify({'emotion': 'NO FACE DETECTED', 'box': None, 'probabilities': {}})
 
         x, y, w, h = [int(v) for v in faces[0][:4]]
@@ -192,8 +216,7 @@ def analyze_frame():
         if face_crop.shape[0] == 0 or face_crop.shape[1] == 0:
             return jsonify({'emotion': 'INVALID CROP', 'box': None, 'probabilities': {}})
 
-        recent_probs.append(predict_emotion(face_crop))
-        probs = np.mean(recent_probs, axis=0)
+        probs = smooth_probs(client_id, predict_emotion(face_crop))
 
         emotion_percentages = {
             name.upper(): round(float(probs[i]) * 100, 2)
